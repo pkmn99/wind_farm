@@ -45,6 +45,18 @@ def calculate_wind_850(exp_name):
     iris.save(var1, '../%s/v850.nc' % exp_name)
     print('file saved at ../%s/' % exp_name)
 
+# Calculate wind speed at 850hpa
+def calculate_ws850(exp_name):
+    file0 = "../" + exp_name + "/u850.nc"
+    file1 = "../" + exp_name + "/v850.nc"
+    print "Calculating wind speed " + file0 + " and " + file1
+    var0 = iris.load(file0)[0]
+    var1 = iris.load(file1)[0]
+    var = (var0 ** 2 + var1 ** 2) ** 0.5
+   # var = np.power(var1 * var1 + var0 * var0, 0.5)
+    var.rename('wind speed at 850hpa')
+    iris.save(var, '../%s/ws850.nc' % exp_name)
+
 def save_prec(exp_name):
 #    exp_name = ['Ctl_diurnal', 'ExpWind0', 'ExpSolar0', 'ExpWindSolar0', 
 #		 'ExpWindG', 'ExpSolarG', 'ExpWindSolarG', 'ExpWind0v']
@@ -55,13 +67,9 @@ def save_prec(exp_name):
         calculate_prec(exp_name[e])
 
 def save_ws0(exp_name):
-#    exp_name = ['Ctl_diurnal', 'ExpWind0', 'ExpSolar0', 'ExpWindSolar0', 
-#		 'ExpWindG', 'ExpSolarG', 'ExpWindSolarG', 'ExpWind0v']
-#    exp_name = ['ExpWindf2', 'ExpWindf6', 'ExpWindf8']
-#    exp_name = ['ExpWindGf2', 'ExpWindGf6', 'ExpWindGf8']
-#    exp_name = ['ExpWindmosaic0', 'ExpWindmosaic1']
     for e in range(len(exp_name)):
         calculate_ws0(exp_name[e])
+
 
 def save_wind_850(exp_name):
 #    exp_name = ['ExpWindf2', 'ExpWindf6', 'ExpWindf8']
@@ -69,6 +77,11 @@ def save_wind_850(exp_name):
 #    exp_name = ['ExpWindmosaic0', 'ExpWindmosaic1']
     for e in range(len(exp_name)):
         calculate_wind_850(exp_name[e])
+
+# First calculate wind 850
+def save_ws850(exp_name):
+    for e in range(len(exp_name)):
+        calculate_ws850(exp_name[e])
 
 def main():
 #    exp=['ExpWindmosaic0', 'ExpWindmosaic1', 'ExpWind1', 'ExpWind2', 'ExpWind3',
@@ -78,7 +91,8 @@ def main():
 #    save_prec(exp_name=exp)
     exp = ['Ctl_diurnal', 'ExpWind0', 'ExpSolar0', 'ExpWindSolar0', 
 		 'ExpWindG', 'ExpSolarG', 'ExpWindSolarG']
-    save_wind_850(exp_name=exp)
+#    save_wind_850(exp_name=exp)
+    save_ws850(exp_name=exp)
 
 if __name__ == '__main__':
     main()
