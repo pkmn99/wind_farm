@@ -18,8 +18,8 @@ from plot_othervar_sahara import stipple
 
 # Define display range of the world
 global extent
-#extent=[-120, 120, -40, 60]
-extent=[-140, 140, -60, 70]
+extent=[-120, 120, -40, 60]
+#extent=[-140, 140, -60, 70]
 
 def load_diff_data(exp_name, variable_name, extent):
     file0 = ('figure_data/%s_%s_diff.nc' % (exp_name, variable_name))
@@ -114,10 +114,12 @@ def make_plot():
         else:
             cf_prec = iplt.contourf(cube, levels, colors=colors, extend='both') 
 	    plt.title(fig_titles[i/2])
-        plt.gca().text(-0.12, 1.03, panel_label[i], fontsize=14, 
+       # plt.gca().text(-0.12, 1.03, panel_label[i], fontsize=14, 
+        plt.gca().text(0, 1.03, panel_label[i], fontsize=14, 
 		       transform=plt.gca().transAxes, fontweight='bold')
         # add mean change value on map
-        plt.gca().text(0.5, 0.08,'$\Delta$:%.2f' %mean_value1, ha='center',
+       # plt.gca().text(0.5, 0.08,'$\Delta$:%.2f' %mean_value1, ha='center',
+        plt.gca().text(0.45, 0.08,'$\Delta$:%.2f' %mean_value1, ha='center',
 	               fontsize=12, color='k', transform=plt.gca().transAxes)
         plt.gca().set_xticks([-180, -120, -60, 0, 60, 120, 180])
         plt.gca().set_yticks([-90, -60, -30, 0, 30, 60, 90])
@@ -133,16 +135,17 @@ def make_plot():
         stipple(wmask)
 
    # Add axes to the figure, to place the colour bar 
-    cbar_ax_temp = plt.gcf().add_axes([0.1, 0.075, 0.3, 0.015]) # [left, bottom, width, height] 
+    cbar_ax_temp = plt.gcf().add_axes([0.1, 0.075, 0.35, 0.015]) # [left, bottom, width, height] 
     cbar = plt.colorbar(cf_temp, cbar_ax_temp, orientation='horizontal')
     cbar.ax.set_xlabel('Temperature (K)')
 
-    cbar_ax_prec = plt.gcf().add_axes([0.575, 0.075, 0.3, 0.015]) # [left, bottom, width, height] 
+    cbar_ax_prec = plt.gcf().add_axes([0.585, 0.075, 0.35, 0.015]) # [left, bottom, width, height] 
     cbar = plt.colorbar(cf_prec, cbar_ax_prec, orientation='horizontal')
     cbar.ax.set_xlabel('Precipitation (mm/day)')
 
-    plt.subplots_adjust(left=0.05,right=0.95,top=0.9, bottom=0.125,hspace=0.3,wspace=0.1)
-    plt.savefig('fig_main_global_test.pdf')
+   # plt.subplots_adjust(left=0.05,right=0.95,top=0.9, bottom=0.125,hspace=0.3,wspace=0.1)
+    plt.subplots_adjust(left=0.06,right=0.975,top=0.9, bottom=0.125,hspace=0.3,wspace=0.15)
+    plt.savefig('fig_main_global_rev.pdf')
     iplt.show()
 
 def main():
