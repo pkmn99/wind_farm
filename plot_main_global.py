@@ -17,6 +17,8 @@ from weighed_mean import get_mean
 from plot_othervar_sahara import stipple
 
 # Define display range of the world
+global extent
+#extent=[-120, 120, -40, 60]
 extent=[-140, 140, -60, 70]
 
 def load_diff_data(exp_name, variable_name, extent):
@@ -77,39 +79,41 @@ def define_contour_level(var):
     return levels 
 
 def make_plot():
-    exp_name = ['ExpWindG', 'ExpSolarG', 'ExpWindSolarG']	
+    exp_name = ['ExpWindG', 'ExpSolarG', 'ExpWindSolarG']
     variable_name =['temp0', 'prec']
     fig_titles = ['Wind farm', 'Solar farm', 'Wind and Solar']
     panel_label = ['a', 'b', 'c', 'd', 'e', 'f'] 
-    extent = [-140, 140, -60, 70]
+#    extent = [-140, 140, -60, 70]
 #    extent = 'None'
     wmask = load_wmask('global', extent)
     levels_wmask = np.array([0, 1.1, 4.1])
     #plt.figure(figsize=(12, 4.5), dpi=300)
-    plt.figure(figsize=(12, 4.5))
+#    plt.figure(figsize=(12, 4.5))
+    plt.figure(figsize=(10,8))
 
     for i in range(6):
+	print(exp_name[i/2])
 	# First three is for tempeature    
-	if i < 3:
+	if (i%2)==0:
             colors = contour_color('temp')
             levels = define_contour_level('temp')
-            cube = load_diff_data(exp_name[i], variable_name[0], extent)
-	    mean_value1, mean_value2 = get_mean(exp_name[i], variable_name[0],
+            cube = load_diff_data(exp_name[i/2], variable_name[0], extent)
+	    mean_value1, mean_value2 = get_mean(exp_name[i/2], variable_name[0],
 			                        'wmask_g')
         else:
             colors = contour_color('prec')
             levels = define_contour_level('prec')
-            cube = load_diff_data(exp_name[i-3], variable_name[1], extent)
-	    mean_value1, mean_value2 = get_mean(exp_name[i%3], variable_name[1],
+            cube = load_diff_data(exp_name[i/2], variable_name[1], extent)
+	    mean_value1, mean_value2 = get_mean(exp_name[i/2], variable_name[1],
 			                        'wmask_g')
     # Make plot
-        plt.subplot(2, 3, i+1)
-	if i < 3: 
+        plt.subplot(3, 2, i+1)
+	if (i%2)==0: 
             cf_temp = iplt.contourf(cube, levels, colors=colors, extend='both') 
-	    plt.title(fig_titles[i])
+	    plt.title(fig_titles[i/2])
         else:
             cf_prec = iplt.contourf(cube, levels, colors=colors, extend='both') 
-	    plt.title(fig_titles[i-3])
+	    plt.title(fig_titles[i/2])
         plt.gca().text(-0.12, 1.03, panel_label[i], fontsize=14, 
 		       transform=plt.gca().transAxes, fontweight='bold')
         # add mean change value on map
@@ -129,16 +133,16 @@ def make_plot():
         stipple(wmask)
 
    # Add axes to the figure, to place the colour bar 
-    cbar_ax_temp = plt.gcf().add_axes([0.925, 0.54, 0.015, 0.35]) # [left, bottom, width, height] 
-    cbar = plt.colorbar(cf_temp, cbar_ax_temp, orientation='vertical')
-    cbar.ax.set_ylabel('Temperature (K)')
+    cbar_ax_temp = plt.gcf().add_axes([0.1, 0.075, 0.3, 0.015]) # [left, bottom, width, height] 
+    cbar = plt.colorbar(cf_temp, cbar_ax_temp, orientation='horizontal')
+    cbar.ax.set_xlabel('Temperature (K)')
 
-    cbar_ax_prec = plt.gcf().add_axes([0.925, 0.1, 0.015, 0.35]) # [left, bottom, width, height] 
-    cbar = plt.colorbar(cf_prec, cbar_ax_prec, orientation='vertical')
-    cbar.ax.set_ylabel('Precipitation (mm/day)')
+    cbar_ax_prec = plt.gcf().add_axes([0.575, 0.075, 0.3, 0.015]) # [left, bottom, width, height] 
+    cbar = plt.colorbar(cf_prec, cbar_ax_prec, orientation='horizontal')
+    cbar.ax.set_xlabel('Precipitation (mm/day)')
 
-    plt.subplots_adjust(left=0.05)
-    plt.savefig('fig_main_global_new.pdf')
+    plt.subplots_adjust(left=0.05,right=0.95,top=0.9, bottom=0.125,hspace=0.3,wspace=0.1)
+    plt.savefig('fig_main_global_test.pdf')
     iplt.show()
 
 def main():
