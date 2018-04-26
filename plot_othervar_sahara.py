@@ -99,7 +99,7 @@ def contour_color(var):
     if var == 'vegc' or var == 'sp':
         colors = np.array([red[2:], green[2:], blue[2:]]).T 
 
-    if var == 'ssr':
+    if var == 'ssr' or var == 'gh850':
 	    colors = np.array([red[3:-1], green[3:-1], blue[3:-1]]).T 
 
     if var == 'ws0':
@@ -145,6 +145,8 @@ def define_contour_level(var):
         levels = np.arange(-5, 12.6, 2.5) 
     if var == 'mconv':
         levels = np.arange(-0.3, 0.301, 0.05) 
+    if var == 'gh850':
+        levels = np.arange(-12, 15.01, 3) 
     return levels 
 
 # Grouping other variables into 3 three figures 
@@ -153,7 +155,7 @@ def define_contour_level(var):
 # group 3: clc, ws0
 def var_group(num): 
     variable_name = ['tmax', 'tmin', 'ws0', 'alb', 'vegc', 'ssr', 'evap', 
-		     'shf', 'clc','sp','rh0','mconv','ali','gh850']
+		     'shf', 'clc','sp','rh0','mconv','gh850','gh850']
     variable_longname = [ 'Max temperature (K)',
 		          'Min temperature (K)',
 		          'Surface wind speed\n (m/s)',
@@ -208,8 +210,8 @@ def draw_var(num):
         plt.subplot(3, 3, i+1)
 
         cf = iplt.contourf(cube, levels, colors=colors, extend='both') 
-
-	if (num==4) & (i<=2): # if surface pressure, add wind field
+        # add wind field to surface pressure
+	if (num==4) & (i<=2):
             wind_u0 = load_diff_data(exp_name[i%3], 'u0',nomask=True)
             wind_v0 = load_diff_data(exp_name[i%3], 'v0',nomask=True)
             wind_ws0 = load_diff_data(exp_name[i%3], 'ws0')
@@ -221,6 +223,20 @@ def draw_var(num):
             Q = plt.quiver(x, y, u, v, pivot='middle')
 	    qk = plt.quiverkey(Q, 0.87, 0.91, 2, r'2m/s', labelpos='E',
 	                       coordinates='figure')
+
+	if (num==5) & (i<=2):
+            wind_u850 = load_diff_data(exp_name[i%3], 'u850',nomask=True)
+            wind_v850 = load_diff_data(exp_name[i%3], 'v850',nomask=True)
+            wind_ws850 = load_diff_data(exp_name[i%3], 'ws850')
+            x = wind_u850.coord('longitude').points + 3.75/2 
+            y = wind_u850.coord('latitude').points
+            u = wind_u850.data
+            v = wind_v850.data
+#            plt.quiver(x, y, u, v, pivot='middle',headwidth=3,headlength=5)
+            Q = plt.quiver(x, y, u, v, pivot='middle')
+	    qk = plt.quiverkey(Q, 0.87, 0.91, 2, r'2m/s', labelpos='E',
+	                       coordinates='figure')
+
 
 	plt.title(fig_titles[i%3])
 
@@ -261,7 +277,8 @@ def main():
 #    draw_var(1)
 #    draw_var(2)
 #    draw_var(3)
-    draw_var(4)
+#    draw_var(4)
+    draw_var(5)
 
 if __name__ == '__main__':
     main()
