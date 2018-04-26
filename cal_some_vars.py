@@ -45,6 +45,14 @@ def calculate_wind_850(exp_name):
     iris.save(var1, '../%s/v850.nc' % exp_name)
     print('file saved at ../%s/' % exp_name)
 
+# Extract the 850 hpa geopotential height
+def calculate_gh850(exp_name):
+    file0 = "../" + exp_name + "/gh.nc"
+    print "Calculating geopotential height at 850hpa"
+    var0 = iris.load_cube(file0)[:,1]
+    iris.save(var0, '../%s/gh850.nc' % exp_name)
+    print('file saved at ../%s/' % exp_name)
+
 # Calculate wind speed at 850hpa
 def calculate_ws850(exp_name):
     file0 = "../" + exp_name + "/u850.nc"
@@ -70,7 +78,6 @@ def save_ws0(exp_name):
     for e in range(len(exp_name)):
         calculate_ws0(exp_name[e])
 
-
 def save_wind_850(exp_name):
 #    exp_name = ['ExpWindf2', 'ExpWindf6', 'ExpWindf8']
 #    exp_name = ['ExpWindGf2', 'ExpWindGf6', 'ExpWindGf8']
@@ -83,6 +90,10 @@ def save_ws850(exp_name):
     for e in range(len(exp_name)):
         calculate_ws850(exp_name[e])
 
+def save_gh850(exp_name):
+    for e in range(len(exp_name)):
+        calculate_gh850(exp_name[e])
+
 def main():
 #    exp=['ExpWindmosaic0', 'ExpWindmosaic1', 'ExpWind1', 'ExpWind2', 'ExpWind3',
 #         'ExpWind4', 'ExpSolar1', 'ExpSolar2', 'ExpSolar3', 'Expsolar4']
@@ -92,7 +103,8 @@ def main():
     exp = ['Ctl_diurnal', 'ExpWind0', 'ExpSolar0', 'ExpWindSolar0', 
 		 'ExpWindG', 'ExpSolarG', 'ExpWindSolarG']
 #    save_wind_850(exp_name=exp)
-    save_ws850(exp_name=exp)
+#    save_ws850(exp_name=exp)
+    save_gh850(exp_name=exp)
 
 if __name__ == '__main__':
     main()
