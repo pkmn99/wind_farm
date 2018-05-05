@@ -105,66 +105,69 @@ def main():
     levels_prec = define_contour_level('prec')
 
     levels_wmask = np.array([0, 1.1, 4.1])
-    plt.figure(figsize=(13, 4.5))
+    plt.figure(figsize=(9, 7))
 
     for i in range(12):
     # Make plot
-        plt.subplot(2, 6, i+1)
+        plt.subplot(4, 3, i+1)
         if i < 6: 
             cube = load_diff_data(exp_name[i], variable_name[0])
             cf_temp = iplt.contourf(cube, levels_temp, colors=colors_temp, extend='both') 
-            plt.title(fig_titles[i])
         else:
             cube = load_diff_data(exp_name[i-6], variable_name[1])
             cf_prec = iplt.contourf(cube, levels_prec, colors=colors_prec, extend='both') 
+        plt.title(fig_titles[i%6])
 
         #    plt.title(fig_titles[i-3])
 #        plt.gca().text(-0.12, 1.03, panel_label[i], fontsize=14,
 #                       transform=plt.gca().transAxes, fontweight='bold')
             # add mean change value on map
-#        plt.gca().set_xticks([-180, -120, -60, 0, 60, 120, 180])
-#        plt.gca().set_yticks([-90, -60, -30, 0, 30, 60, 90])
+	if i%3 == 0:
+            plt.gca().set_yticks([-90, -60, -30, 0, 30, 60, 90])
+       # plt.gca().set_xticks([-180, -120, -60, 0, 30, 60, 120, 180])
+        plt.gca().set_xticks([0, 30])
         lon_formatter = LongitudeFormatter(degree_symbol='')
         lat_formatter = LatitudeFormatter(degree_symbol='')
         plt.gca().xaxis.set_major_formatter(lon_formatter)
         plt.gca().yaxis.set_major_formatter(lat_formatter)
         plt.gca().coastlines()
-        plt.gca().set_extent([-80, 80, -15, 15])
+       # plt.gca().set_extent([-80, 80, -15, 15])
+        plt.gca().set_extent([-30, 60, 0, 30])
 
 
         # Add wind farm location on the map and  add text to show averaged change
         if i < 6:
             wmask = load_wmask(i+1)
 	    # special case for mosaic B
-	    if i ==1:
+	    if i==1:
                 stipple(wmask,type='B') 
 	    else:
 		stipple(wmask) 
             mean_value1 = get_mean_local(exp_name[i%6], variable_name[0], wmask, 4)
-            plt.gca().text(0.5, 0.08,'$\Delta$:%.2f' %mean_value1, ha='center',
+            plt.gca().text(0.6, 0.08,'$\Delta$:%.2f' %mean_value1, ha='center',
 			   fontsize=12, color='k', transform=plt.gca().transAxes)
         else:
             wmask = load_wmask(i-5)
 	    # special case for mosaic B
-	    if i == 7:
+	    if i==7:
                 stipple(wmask,type='B') 
 	    else:
 		stipple(wmask) 
             mean_value1 = get_mean_local(exp_name[i%6], variable_name[1], wmask, 4)
            # mean_value2 = get_mean_local(cube, wmask, 4)
-            plt.gca().text(0.5, 0.08,'$\Delta$:%.2f' %mean_value1, ha='center',
+            plt.gca().text(0.6, 0.08,'$\Delta$:%.2f' %mean_value1, ha='center',
             		   fontsize=12, color='k', transform=plt.gca().transAxes)
 
    # Add axes to the figure, to place the colour bar 
-    cbar_ax_temp = plt.gcf().add_axes([0.915, 0.525, 0.015, 0.35]) # [left, bottom, width, height] 
+    cbar_ax_temp = plt.gcf().add_axes([0.915, 0.56, 0.015, 0.35]) # [left, bottom, width, height] 
     cbar = plt.colorbar(cf_temp, cbar_ax_temp, orientation='vertical')
     cbar.ax.set_ylabel('Temperature (K)')
 
-    cbar_ax_prec = plt.gcf().add_axes([0.915, 0.125, 0.015, 0.35]) # [left, bottom, width, height] 
+    cbar_ax_prec = plt.gcf().add_axes([0.915, 0.09, 0.015, 0.35]) # [left, bottom, width, height] 
     cbar = plt.colorbar(cf_prec, cbar_ax_prec, orientation='vertical')
     cbar.ax.set_ylabel('Precipitation (mm/day)')
-    plt.subplots_adjust(left=0.05, hspace=0, wspace=0)
-    plt.savefig('fig_checkerboard_quarter.pdf')
+    plt.subplots_adjust(top=0.95, bottom=0.05, left=0.05, hspace=0.15, wspace=0)
+    plt.savefig('fig_checkerboard_quarter_rev.pdf')
     iplt.show()
 
 if __name__ == '__main__':
