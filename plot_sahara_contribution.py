@@ -60,52 +60,52 @@ def define_contour_level(var):
     return levels 
 
 def main():
-   # exp_name = ['ExpWind0v', 'ExpWind0v', 'ExpWind0']	
-    exp_name = ['ExpSolar0v', 'ExpSolar0v', 'ExpSolar0']	
+    exp_name = ['ExpWind0v', 'ExpWind0v', 'ExpWind0']	
+   # exp_name = ['ExpSolar0v', 'ExpSolar0v', 'ExpSolar0']	
     variable_name =['temp0', 'prec']
-   # fig_titles = ['Roughness', 'Vegetation', 'Rough + Veg = Wind farm']
-    fig_titles = ['Albedo', 'Vegetation', 'Alb + Veg = Solar farm']
+    fig_titles = ['Roughness', 'Vegetation', 'Rough + Veg = Wind farm']
+   # fig_titles = ['Albedo', 'Vegetation', 'Alb + Veg = Solar farm']
     panel_label = ['a', 'b', 'c', 'd', 'e', 'f'] 
 
     wmask = load_wmask()
     levels_wmask = np.array([0, 1.1, 4.1])
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(7, 8.5))
 
     for i in range(6):
-	# First three is for tempeature    
-	if i < 3:
+	# First three is for tempeature
+	if (i%2)==0:
             colors = contour_color('temp')
             levels = define_contour_level('temp')
-	    # Vegetation feedback (ExpWind0-ExpWind0v) 
-	    if i != 1:
-                cube = load_diff_data(exp_name[i], variable_name[0])
-	        mean_value1, mean_value2 = get_mean(exp_name[i], variable_name[0],
+	    # Vegetation feedback (ExpWind1-ExpWind0v) 
+	    if (i!=2) &(i!=3):
+                cube = load_diff_data(exp_name[i/2], variable_name[0])
+	        mean_value1, mean_value2 = get_mean(exp_name[i/2], variable_name[0],
 			                            'wmask')
             # Standard wind farm
 	    else:
-                cube = load_diff_data(exp_name[i], variable_name[0], vegon=1)
-	        mean_value1, mean_value2 = get_mean(exp_name[i], variable_name[0],
+                cube = load_diff_data(exp_name[i/2], variable_name[0], vegon=1)
+	        mean_value1, mean_value2 = get_mean(exp_name[i/2], variable_name[0],
 			                            'wmask', vegon=1)
         else:
             colors = contour_color('prec')
             levels = define_contour_level('prec')
-	    if i != 4:
-                cube = load_diff_data(exp_name[i%3], variable_name[1])
-	        mean_value1, mean_value2 = get_mean(exp_name[i%3], variable_name[1],
+	    if i != 3:
+                cube = load_diff_data(exp_name[i/2], variable_name[1])
+	        mean_value1, mean_value2 = get_mean(exp_name[i/2], variable_name[1],
 			                            'wmask')
 	    else:
-                cube = load_diff_data(exp_name[i%3], variable_name[1], vegon=1)
-	        mean_value1, mean_value2 = get_mean(exp_name[i%3], variable_name[1],
+                cube = load_diff_data(exp_name[i/2], variable_name[1], vegon=1)
+	        mean_value1, mean_value2 = get_mean(exp_name[i/2], variable_name[1],
 			                            'wmask', vegon=1)
     # Make plot
-        plt.subplot(2, 3, i+1)
-	if i < 3: 
+        plt.subplot(3, 2, i+1)
+	if i%2 == 0: 
             cf_temp = iplt.contourf(cube, levels, colors=colors, extend='both') 
-	    plt.title(fig_titles[i])
+	    plt.title(fig_titles[i/2])
         else:
             cf_prec = iplt.contourf(cube, levels, colors=colors, extend='both') 
-	    plt.title(fig_titles[i-3])
-        plt.gca().text(-0.12, 1.03, panel_label[i], fontsize=14, 
+	    plt.title(fig_titles[i/2])
+        plt.gca().text(-0.12, 1.03, panel_label[i], fontsize=14,
 		       transform=plt.gca().transAxes, fontweight='bold')
         # add mean change value on map
         plt.gca().text(0.5, 0.08,'$\Delta$:%.2f' %mean_value1, ha='center',
@@ -124,15 +124,17 @@ def main():
         stipple(wmask) 
 
    # Add axes to the figure, to place the colour bar 
-    cbar_ax_temp = plt.gcf().add_axes([0.925, 0.525, 0.015, 0.4]) # [left, bottom, width, height] 
-    cbar = plt.colorbar(cf_temp, cbar_ax_temp, orientation='vertical')
-    cbar.ax.set_ylabel('Temperature (K)')
+    cbar_ax_temp = plt.gcf().add_axes([0.1, 0.075, 0.35, 0.0125]) # [left, bottom, width, height] 
+    cbar = plt.colorbar(cf_temp, cbar_ax_temp, orientation='horizontal')
+    cbar.ax.set_xlabel('Temperature (K)')
+    cbar_ax_prec = plt.gcf().add_axes([0.585, 0.075, 0.35, 0.0125]) # [left, bottom, width, height] 
 
-    cbar_ax_prec = plt.gcf().add_axes([0.925, 0.075, 0.015, 0.4]) # [left, bottom, width, height] 
-    cbar = plt.colorbar(cf_prec, cbar_ax_prec, orientation='vertical')
-    cbar.ax.set_ylabel('Precipitation (mm/day)')
+    cbar = plt.colorbar(cf_prec, cbar_ax_prec, orientation='horizontal')
+    cbar.ax.set_xlabel('Precipitation (mm/day)')
 
-    plt.savefig('fig_sahara_contribution_solar.pdf')
+    plt.subplots_adjust(hspace=0.1, left=0.075, right=0.95, top=0.95)
+
+    plt.savefig('fig_sahara_contribution_rev.pdf')
     iplt.show()
 
 if __name__ == '__main__':
